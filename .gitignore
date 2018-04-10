@@ -1,0 +1,9 @@
+*.o
+*.a
+.D*
+*.dSYM
+libft
+a.out
+test
+ft_nm
+ft_otool
