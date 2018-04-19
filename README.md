@@ -19,12 +19,14 @@ man nm; man otool
 
 ### ```magic``` number
 ```c
-#define MH_MAGIC    0xfeedface    /* the mach magic number */
-#define MH_CIGAM    0xcefaedfe    /* NXSwapInt(MH_MAGIC) */
-#define MH_MAGIC_64 0xfeedfacf    /* the 64-bit mach magic number */
-#define MH_CIGAM_64 0xcffaedfe    /* NXSwapInt(MH_MAGIC_64) */
-#define FAT_MAGIC   0xcafebabe    /* the fat magic number */
-#define FAT_CIGAM   0xbebafeca    /* NXSwapLong(FAT_MAGIC) */
+#define MH_MAGIC     0xfeedface    /* the mach magic number */
+#define MH_CIGAM     0xcefaedfe    /* NXSwapInt(MH_MAGIC) */
+#define MH_MAGIC_64  0xfeedfacf    /* the 64-bit mach magic number */
+#define MH_CIGAM_64  0xcffaedfe    /* NXSwapInt(MH_MAGIC_64) */
+#define FAT_MAGIC    0xcafebabe    /* the fat magic number */
+#define FAT_CIGAM    0xbebafeca    /* NXSwapLong(FAT_MAGIC) */
+#define FAT_MAGIC_64 0xcafebabf    /* the 64-bit fat magic number */
+#define FAT_CIGAM_64 0xbfbafeca    /* NXSwapLong(FAT_MAGIC_64) */
 ```
 
 ### ```mach_header``` and ```load_command```
@@ -42,6 +44,24 @@ _64 uint32_t        reserved;   /* reserved */
 struct load_command:            /* load_command header */
     uint32_t        cmd;        /* type of load command */
     uint32_t        cmdsize;    /* total size of command in bytes */
+```
+
+### ```fat_header``` and ```fat_arch```
+
+```c
+struct fat_header:
+    uint32_t        magic;      /* FAT_MAGIC or FAT_MAGIC_64 */
+    uint32_t        nfat_arch;  /* number of structs that follow */
+
+struct fat_arch:                /* struct fat_arch_64 for 64-bit*/
+    cpu_type_t      cputype;    /* cpu specifier (int) */
+    cpu_subtype_t   cpusubtype; /* machine specifier (int) */
+_32 uint32_t        offset;     /* file offset to this object file */
+_32 uint32_t        size;       /* size of this object file */
+_64 uint64_t        offset;     /* file offset to this object file */
+_64 uint64_t        size;       /* size of this object file */
+    uint32_t        align;      /* alignment as a power of 2 */
+_64 uint32_t        reserved;   /* reserved */
 ```
 
 ##  Segments and Sections
