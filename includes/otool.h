@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/10 18:17:30 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/10 18:19:15 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/19 03:20:03 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,6 @@
 # define OTOOL_H
 
 #include "libft.h"
+#include "nm.h"
 
 #endif
