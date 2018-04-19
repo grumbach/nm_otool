@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/10 18:02:19 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/17 20:14:35 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/19 16:13:04 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,38 +19,69 @@ int				errors(const int err, const char *str)
 	return (EXIT_FAILURE);
 }
 
-
-char			get_type(const uint8_t n_type)
+char			what_section(const uint8_t n_sect, char *ptr)
 {
-	// int			type;
-	char		type = 'u'; /*local as default */
+	struct mach_header_64 *macho = (struct mach_header_64 *)ptr;
+	struct load_command *lc = (struct load_command *)(ptr + sizeof(*macho));
+	struct section_64 *sect;
 
-    //
-	// if (N_STAB & n_type) /* debugging entry */
-	// 	type = '-';
-	// if (N_PEXT & n_type) /* private external */
-	// 	type = 'u'; //TODO find letter for this
-    //
-    //
-    //
-	// /////////// ---------TMP
-	// char ntyp[42];
-	// ft_memset(ntyp, 'S', 42);
-	// ntyp[0] = 'U';
-	// ntyp[N_TYPE & N_UNDF] = 'U';
-	// ntyp[N_TYPE & N_ABS] = 'A';
-	// ntyp[N_TYPE & N_SECT] = 'T';
-	// ntyp[N_TYPE & N_PBUD] = 'c';
-	// ntyp[N_TYPE & N_INDR] = 'I';
-	// // ntyp[N_PEXT | ] = '';
-	// /////////// ---------TMP
+	int ncmds = macho->ncmds;
+	uint8_t sect_number = 0;
+	for (int i = 0; i < ncmds; i++)
+	{
+		if (lc->cmd == LC_SEGMENT_64)
+		{
+			struct segment_command_64 *seg = lc;
+			sect = (struct section_64 *)(seg + 1);
 
-	// ntyp[array[i].n_type]
+			int nsects = seg->nsects;
+			for (size_t j = 0; j < nsects && sect_number < n_sect; j++)
+			{
+				sect_number++;
+				if (sect_number == n_sect)
+					break;
+				sect++;//this is a pointer
 
+			}
+			if (sect_number == n_sect)
+				break;
+		}
+		lc = (char *)lc + lc->cmdsize;
+	}
+	if (!ft_strncmp(sect->sectname, "__text", 6))
+		return ('t');
+	else if (!ft_strncmp(sect->sectname, "__data", 6))
+		return ('d');
+	else if (!ft_strncmp(sect->sectname, "__bss", 5))
+		return ('b');
+	else
+		return ('s');
+}
 
+char			get_type(const uint8_t n_type, const uint8_t n_sect, char *ptr)
+{
+	char		type = 'u';
+	int			n_type_data = N_TYPE & n_type;
 
-	// if (N_EXT & n_type) /* external to UPERCASE */
-	// 	type = ft_toupper(type);
+	if (N_STAB & n_type)
+		type = '-';
+	if (N_PEXT & n_type)
+		type = 'u'; //TODO find correct letter for this
+	if (n_type_data == N_UNDF)
+		type = 'u';
+	else if (n_type_data == N_ABS)
+		type = 'a';
+	else if (n_type_data == N_SECT)
+		type = what_section(n_sect, ptr);
+	else if (n_type_data == N_PBUD)
+		type = 'u'; //TODO find correct letter for this
+	else if (n_type_data == N_INDR)
+		type = 'i';
+
+	//TODO how about 'C' ?????
+
+	if (N_EXT & n_type) /* external to UPPERCASE */
+		type = ft_toupper(type);
 	return (type);
 }
 
@@ -67,13 +98,14 @@ static void			print_output(int nsysms, int symoff, int stroff, char *ptr)
 	//for each symbol table entries
 	while (i  < nsysms)
 	{
-		char		type = get_type(array[i].n_type);
+		char		type = get_type(array[i].n_type, array[i].n_sect, ptr);
 		uint64_t	offset =  array[i].n_value;
 		char		*str = stringtable + array[i].n_un.n_strx;
 
-		ft_printf("===(n_type)%d, (n_sect)%d, (n_desc)%d\t===", array[i].n_type, array[i].n_sect, array[i].n_desc);
-
-		ft_printf("%016lx %c %s\n", offset, type, str);
+		if (offset)
+			ft_printf("%016lx %c %s\n", offset, type, str);
+		else
+			ft_printf("                 %c %s\n", type, str);
 		i++;
 	}
 }
