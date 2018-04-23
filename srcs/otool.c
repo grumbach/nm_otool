@@ -1,28 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errors.c                                           :+:      :+:    :+:   */
+/*   otool.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/22 17:44:48 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/23 23:48:43 by agrumbac         ###   ########.fr       */
+/*   Created: 2018/04/23 17:42:24 by agrumbac          #+#    #+#             */
+/*   Updated: 2018/04/24 00:01:23 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 
-bool				errors(const int err, const char *str)
+static bool		otool(void)
 {
-	static const char	*msg[ERR_NUMBER] =
-	{
-		"Error: ",
-		"Bad usage: ",
-		"Bad file: ",
-		"  -> "
-	};
+	return (errors(ERR_FILE, "you're otooled"));//TODO actually manage smth
+}
 
-	ft_putstr_fd(msg[err], 2);
-	ft_putendl_fd(str, 2);
+int				main(int ac, char **av)
+{
+	if (ac < 2)
+	{
+		extract_macho(DEFAULT_TARGET, &otool);
+	}
+	while (*++av)
+	{
+		extract_macho(*av, &otool);
+	}
 	return (0);
 }

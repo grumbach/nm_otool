@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/22 19:02:01 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/23 23:49:55 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,19 @@ static inline t_safe_pointer	*singleton(t_safe_pointer *new)
 
 void							*safe(const uint64_t offset, const size_t size)
 {
-	const t_safe_pointer		*safe = singleton(NULL);
+	t_safe_pointer				*safe = singleton(NULL);
 
 	return (safe->ptr + offset * (offset + size < safe->filesize));
 }
 
-void							*read_file(const char *file)
+bool							read_file(const char *filename)
 {
-	int			fd;
-	void		*ptr;
-	struct stat	buf;
+	int							fd;
+	void						*ptr;
+	struct stat					buf;
+	t_safe_pointer				safe_pointer;
 
-	if ((fd = open(file, O_RDONLY)) < 0)
+	if ((fd = open(filename, O_RDONLY)) < 0)
 		return (errors(ERR_SYS, "No such file or directory."));
 	if (fstat(fd, &buf) < 0)
 		return (errors(ERR_USAGE, "fstat failed"));
@@ -42,5 +43,7 @@ void							*read_file(const char *file)
 		return (errors(ERR_SYS, "munmap failed"));
 	if (close(fd))
 		return (errors(ERR_SYS, "close failed"));
-	return (singleton(ptr));
+
+	safe_pointer = (t_safe_pointer){ptr, buf.st_size};
+	return ((bool)singleton(&safe_pointer));
 }

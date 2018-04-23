@@ -6,19 +6,26 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:07 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/22 22:59:15 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/24 00:01:31 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 
-int			main(int ac, char **av)
+static bool		nm(void)
+{
+	return (errors(ERR_FILE, "you're nm'd"));//TODO actually manage smth
+}
+
+int				main(int ac, char **av)
 {
 	if (ac < 2)
-		check_file_type(DEFAULT_TARGET);
+	{
+		extract_macho(DEFAULT_TARGET, &nm);
+	}
 	while (*++av)
 	{
-		check_file_type(*av);
+		extract_macho(*av, &nm);
 	}
 	return (0);
 }
