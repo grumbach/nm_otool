@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/04/23 23:30:24 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/04/24 16:43:48 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OTOOL_NAME = ft_otool
 
 CC = gcc
 
-#CFLAGS = -Wall -Wextra -Werror
+# CFLAGS = -Wall -Wextra -Werror
 
 COMMON_SRC = errors.c safe.c parse_type.c parse_macho.c
 
@@ -34,9 +34,7 @@ LIB = -Llibft/ -lft
 
 INCLUDES = -Ilibft/includes/ -Iincludes/
 
-DEP_NM = includes/nm.h libft/libft.a
-
-DEP_OTOOL = includes/otool.h libft/libft.a
+DEP = includes/nm_otool.h libft/libft.a
 
 ############################## COLORS ##########################################
 
@@ -77,7 +75,7 @@ ${NM_NAME}: ${NM_OBJ}
 	@${CC} ${CFLAGS} ${INCLUDES} ${LIB} -o $@ ${NM_OBJ}
 	@echo ${G}Success"   "[${NM_NAME}]${X}
 
-${OBJDIR}/%.o: ${SRCDIR}/%.c ${DEP_NM}
+${OBJDIR}/%.o: ${SRCDIR}/%.c ${DEP}
 	@echo ${Y}Compiling [$@]...${X}
 	@/bin/mkdir -p ${OBJDIR}
 	@${CC} ${CFLAGS} ${INCLUDES} -c -o $@ $<
@@ -92,7 +90,7 @@ ${OTOOL_NAME}: ${OTOOL_OBJ}
 	@${CC} ${CFLAGS} ${INCLUDES} ${LIB} -o $@ ${OTOOL_OBJ}
 	@echo ${G}Success"   "[${OTOOL_NAME}]${X}
 
-${OBJDIR}/%.o: ${SRCDIR}/%.c ${DEP_OTOOL}
+${OBJDIR}/%.o: ${SRCDIR}/%.c ${DEP}
 	@echo ${Y}Compiling [$@]...${X}
 	@/bin/mkdir -p ${OBJDIR}
 	@${CC} ${CFLAGS} ${INCLUDES} -c -o $@ $<

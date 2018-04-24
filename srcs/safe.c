@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/23 23:49:55 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/25 23:17:13 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,18 @@ static inline t_safe_pointer	*singleton(t_safe_pointer *new)
 	return (&safe);
 }
 
+/*
+** safe()
+** returns a safe pointer
+** returns NULL if requested memory is out of range
+*/
+
 void							*safe(const uint64_t offset, const size_t size)
 {
-	t_safe_pointer				*safe = singleton(NULL);
+	t_safe_pointer				*safe;
 
-	return (safe->ptr + offset * (offset + size < safe->filesize));
+	safe = singleton(NULL);
+	return ((long)(safe->ptr + offset) * (offset + size < safe->filesize));
 }
 
 bool							read_file(const char *filename)

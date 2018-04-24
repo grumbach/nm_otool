@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:41:33 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/23 23:58:39 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/25 22:02:22 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,9 @@
 
 # define DEFAULT_TARGET		"a.out"
 
+# define OTOOL_SECTION		"__text"
+# define OTOOL_SEGMENT		"__TEXT"
+
 # define ARCHIVE_MAGIC		0x213C6172
 
 /*
@@ -47,6 +50,10 @@
 */
 
 typedef int		bool;
+
+typedef bool (*t_gatherer)(const bool is_64);
+typedef bool (*t_lc_manager)(const size_t offset);
+typedef bool (*t_section_manager)(const size_t offset, const uint32_t section_index);
 
 typedef struct	s_safe_pointer
 {
@@ -59,7 +66,19 @@ typedef struct	s_safe_pointer
 */
 
 bool			read_file(const char *filename);
-bool			extract_macho(const char *filename, bool (*gatherer)(void));
+bool			extract_macho(const char *filename, t_gatherer func);
+
+
+bool			iterate_lc(const bool is_64, const uint32_t target, \
+					t_lc_manager func);
+
+bool			iterate_sections_64(const size_t start_offset, \
+					const char *target_segment, const char *target_section, \
+					t_section_manager func_ptr);
+bool			iterate_sections(const size_t start_offset, \
+					const char *target_segment, const char *target_section, \
+					t_section_manager func_ptr);
+
 
 void			*safe(const uint64_t offset, const size_t size);
 bool			errors(const int err, const char *str);
