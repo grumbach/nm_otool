@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 22:29:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/24 23:14:41 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/26 00:33:11 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 	if (!read_file(filename))
 		return (errors(ERR_THROW, "in _read_file"));
 
-	magic = safe(0, sizeof(uint32_t));
+	if (!(magic = safe(0, sizeof(uint32_t))))
+		return (errors(ERR_FILE, "no room magic"));
 
 	if (*magic == MH_MAGIC || *magic == MH_CIGAM)
 		return (func_ptr(0));

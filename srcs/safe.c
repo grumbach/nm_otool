@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/25 23:17:13 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/26 17:58:27 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ void							*safe(const uint64_t offset, const size_t size)
 	t_safe_pointer				*safe;
 
 	safe = singleton(NULL);
-	return ((long)(safe->ptr + offset) * (offset + size < safe->filesize));
+	return ((void *)((size_t)(safe->ptr + offset) * \
+			(offset + size < safe->filesize)));
 }
 
 bool							read_file(const char *filename)
@@ -43,11 +44,13 @@ bool							read_file(const char *filename)
 	t_safe_pointer				safe_pointer;
 
 	if ((fd = open(filename, O_RDONLY)) < 0)
-		return (errors(ERR_SYS, "No such file or directory."));
+		return (errors(ERR_SYS, "no such file or directory"));
 	if (fstat(fd, &buf) < 0)
 		return (errors(ERR_USAGE, "fstat failed"));
+	if (buf.st_mode & S_IFDIR)
+		return (errors(ERR_USAGE, "can't parse directories"));
 	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-		return (errors(ERR_SYS, "munmap failed"));
+		return (errors(ERR_SYS, "mmap failed"));
 	if (close(fd))
 		return (errors(ERR_SYS, "close failed"));
 

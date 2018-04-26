@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 22:30:11 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/25 22:52:27 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/26 16:28:40 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,20 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 	size_t					offset;
 
 	offset = is_64 ? sizeof(struct mach_header_64) : sizeof(struct mach_header);
-	macho = safe(0, sizeof(*macho));
-	lc = safe(offset, sizeof(*lc));
+	if (!(macho = safe(0, sizeof(*macho))))
+		return (errors(ERR_FILE, "bad macho header offset"));
+	if (!(lc = safe(offset, sizeof(*lc))))
+		return (errors(ERR_FILE, "bad load command offset"));
 	ncmds = macho->ncmds;
 	while (ncmds--)
 	{
-		if (lc->cmd == target)
-			func_ptr(offset);
+		if (lc->cmd == target && !func_ptr(offset))
+			return (errors(ERR_THROW, "in _iterate_lc"));
 		offset += lc->cmdsize;
-		lc = safe(offset, sizeof(*lc));
+		if (!(lc = safe(offset, sizeof(*lc))))
+			return (errors(ERR_FILE, "bad load command offset"));
 	}
+	return (BOOL_TRUE);
 }
 
 /*
@@ -56,24 +60,27 @@ bool			iterate_sections(const size_t start_offset, \
 	uint32_t					section_index;
 	uint32_t					nsects;
 
-	seg = safe(start_offset, sizeof(*seg));
+	if (!(seg = safe(start_offset, sizeof(*seg))))
+		return (errors(ERR_FILE, "bad segment offset"));
 	offset = start_offset + sizeof(*seg);
-	sect = safe(offset, sizeof(*sect));
+	if (!(sect = safe(offset, sizeof(*sect))))
+		return (errors(ERR_FILE, "bad section offset"));
 	section_index = 1;
 	if (!target_segment || ft_strncmp(seg->segname, target_segment, 16))
 	{
 		nsects = seg->nsects;
 		while (nsects--)
 		{
-			if (!target_section || ft_strncmp(sect->sectname, target_section, 16))
-			{
-				func_ptr(offset, section_index);
-			}
+			if ((!target_section || ft_strncmp(sect->sectname, target_section, 16))
+				&& !func_ptr(offset, section_index))
+				return (errors(ERR_THROW, "in _iterate_sections"));
 			section_index += 1;
 			offset += sizeof(*sect);
-			sect = safe(offset, sizeof(*sect));
+			if (!(sect = safe(offset, sizeof(*sect))))
+				return (errors(ERR_FILE, "bad section offset"));
 		}
 	}
+	return (BOOL_TRUE);
 }
 
 bool			iterate_sections_64(const size_t start_offset, \
@@ -86,22 +93,25 @@ bool			iterate_sections_64(const size_t start_offset, \
 	uint32_t					section_index;
 	uint32_t					nsects;
 
-	seg = safe(start_offset, sizeof(*seg));
+	if (!(seg = safe(start_offset, sizeof(*seg))))
+		return (errors(ERR_FILE, "bad segment offset"));
 	offset = start_offset + sizeof(*seg);
-	sect = safe(offset, sizeof(*sect));
+	if (!(sect = safe(offset, sizeof(*sect))))
+		return (errors(ERR_FILE, "bad section offset"));
 	section_index = 1;
 	if (!target_segment || !ft_strncmp(seg->segname, target_segment, 16))
 	{
 		nsects = seg->nsects;
 		while (nsects--)
 		{
-			if (!target_section || !ft_strncmp(sect->sectname, target_section, 16))
-			{
-				func_ptr(offset, section_index);
-			}
+			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
+				&& !func_ptr(offset, section_index))
+				return (errors(ERR_THROW, "in _iterate_sections_64"));
 			section_index += 1;
 			offset += sizeof(*sect);
-			sect = safe(offset, sizeof(*sect));
+			if (!(sect = safe(offset, sizeof(*sect))))
+				return (errors(ERR_FILE, "bad section offset"));
 		}
 	}
+	return (BOOL_TRUE);
 }
