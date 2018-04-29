@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 17:42:24 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/26 17:56:01 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/29 21:18:20 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,12 +109,10 @@ int				main(int ac, char **av)
 {
 	if (ac < 2)
 	{
-		ft_printf("%s:\n", DEFAULT_TARGET);
 		extract_macho(DEFAULT_TARGET, &otool_gatherer);
 	}
 	else if (*++av)
 	{
-		ft_printf("%s:\n", *av);
 		extract_macho(*av, &otool_gatherer);
 		main(ac, av);
 	}

@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/26 17:58:27 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/29 21:57:54 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static inline t_safe_pointer	*singleton(t_safe_pointer *new)
 {
-	static t_safe_pointer		safe;
+	static t_safe_pointer		safe = {NULL, 0};
 
 	if (new)
 		safe = *new;
@@ -35,6 +35,8 @@ void							*safe(const uint64_t offset, const size_t size)
 	return ((void *)((size_t)(safe->ptr + offset) * \
 			(offset + size < safe->filesize)));
 }
+
+//TODO s_safe_pointer start_offset asignment (for fat and archives)
 
 bool							read_file(const char *filename)
 {

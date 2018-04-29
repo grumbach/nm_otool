@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/04/24 16:43:48 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/04/29 21:37:30 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CC = gcc
 
 # CFLAGS = -Wall -Wextra -Werror
 
-COMMON_SRC = errors.c safe.c parse_type.c parse_macho.c
+COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c
 
 NM_SRC = nm.c ${COMMON_SRC}
 

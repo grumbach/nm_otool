@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 22:30:11 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/26 16:28:40 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/04/29 21:33:22 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,17 @@
 bool			iterate_lc(const bool is_64, const uint32_t target, \
 					t_lc_manager func_ptr)
 {
+	static const size_t		mach_size[2] =
+	{
+		sizeof(struct mach_header),
+		sizeof(struct mach_header_64)
+	};
 	struct mach_header		*macho;//32 and 64 have the same attributes
 	struct load_command		*lc;
 	uint32_t				ncmds;
 	size_t					offset;
 
-	offset = is_64 ? sizeof(struct mach_header_64) : sizeof(struct mach_header);
+	offset = mach_size[is_64];
 	if (!(macho = safe(0, sizeof(*macho))))
 		return (errors(ERR_FILE, "bad macho header offset"));
 	if (!(lc = safe(offset, sizeof(*lc))))
@@ -54,10 +59,10 @@ bool			iterate_sections(const size_t start_offset, \
 					const char *target_segment, const char *target_section, \
 					t_section_manager func_ptr)
 {
+	static uint32_t				section_index = 1;
 	struct segment_command		*seg;
 	struct section				*sect;
 	size_t						offset;
-	uint32_t					section_index;
 	uint32_t					nsects;
 
 	if (!(seg = safe(start_offset, sizeof(*seg))))
@@ -65,7 +70,6 @@ bool			iterate_sections(const size_t start_offset, \
 	offset = start_offset + sizeof(*seg);
 	if (!(sect = safe(offset, sizeof(*sect))))
 		return (errors(ERR_FILE, "bad section offset"));
-	section_index = 1;
 	if (!target_segment || ft_strncmp(seg->segname, target_segment, 16))
 	{
 		nsects = seg->nsects;
@@ -87,10 +91,10 @@ bool			iterate_sections_64(const size_t start_offset, \
 					const char *target_segment, const char *target_section, \
 					t_section_manager func_ptr)
 {
+	static uint32_t				section_index = 1;
 	struct segment_command_64	*seg;
 	struct section_64			*sect;
 	size_t						offset;
-	uint32_t					section_index;
 	uint32_t					nsects;
 
 	if (!(seg = safe(start_offset, sizeof(*seg))))
@@ -98,7 +102,6 @@ bool			iterate_sections_64(const size_t start_offset, \
 	offset = start_offset + sizeof(*seg);
 	if (!(sect = safe(offset, sizeof(*sect))))
 		return (errors(ERR_FILE, "bad section offset"));
-	section_index = 1;
 	if (!target_segment || !ft_strncmp(seg->segname, target_segment, 16))
 	{
 		nsects = seg->nsects;
