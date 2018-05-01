@@ -6,18 +6,16 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/29 21:57:54 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/02 18:36:18 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 
-static inline t_safe_pointer	*singleton(t_safe_pointer *new)
+static inline t_safe_pointer	*singleton()
 {
-	static t_safe_pointer		safe = {NULL, 0};
+	static t_safe_pointer		safe = {NULL, 0, 0};
 
-	if (new)
-		safe = *new;
 	return (&safe);
 }
 
@@ -31,19 +29,26 @@ void							*safe(const uint64_t offset, const size_t size)
 {
 	t_safe_pointer				*safe;
 
-	safe = singleton(NULL);
-	return ((void *)((size_t)(safe->ptr + offset) * \
-			(offset + size < safe->filesize)));
+	safe = singleton();
+	return ((void *) \
+		((size_t)(safe->ptr + safe->start_offset + offset) * \
+		(safe->start_offset + offset + size < safe->filesize)));
 }
 
-//TODO s_safe_pointer start_offset asignment (for fat and archives)
+void							set_start_offset(size_t new_start_offset)
+{
+	t_safe_pointer				*safe;
+
+	safe = singleton();
+	safe->start_offset = new_start_offset;
+}
 
 bool							read_file(const char *filename)
 {
 	int							fd;
 	void						*ptr;
 	struct stat					buf;
-	t_safe_pointer				safe_pointer;
+	t_safe_pointer				*safe;
 
 	if ((fd = open(filename, O_RDONLY)) < 0)
 		return (errors(ERR_SYS, "no such file or directory"));
@@ -56,6 +61,19 @@ bool							read_file(const char *filename)
 	if (close(fd))
 		return (errors(ERR_SYS, "close failed"));
 
-	safe_pointer = (t_safe_pointer){ptr, buf.st_size};
-	return ((bool)singleton(&safe_pointer));
+	safe = singleton();
+	safe->ptr = ptr;
+	safe->filesize = buf.st_size;
+	safe->start_offset = 0;
+	return (BOOL_TRUE);
+}
+
+bool							free_file(void)
+{
+	t_safe_pointer				*safe;
+
+	safe = singleton();
+	if (munmap(safe->ptr, safe->filesize))
+		return (errors(ERR_SYS, "munmap failed"));
+	return (BOOL_TRUE);
 }

@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 17:42:24 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/29 21:18:20 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/02 21:47:41 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,10 @@ static void		hexdump_text(const char *text, uint64_t offset, uint64_t size)
 	uint64_t			j;
 
 	ft_printf("Contents of (%s,%s) section\n", OTOOL_SEGMENT, OTOOL_SECTION);
-
 	i = 0;
 	while (i < size)
 	{
-		// ft_printf("%016llx\t", offset + i);//TODO figure out missing 0x100000000
-		ft_printf("00000001%08llx\t", offset + i);//tmp hardfix
+		ft_printf("%016llx\t", offset + i);
 		j = 0;
 		while (j < 0x10 && i + j < size)
 			ft_printf("%02hhx ", text[i + j++]);
@@ -43,10 +41,10 @@ static bool		print_section(const size_t offset, const uint32_t section_index)
 
 	if (!(sect = safe(offset, sizeof(*sect))))
 		return (errors(ERR_FILE, "bad section offset"));
-	if (!(text = safe(sect->offset, sect->size)))
+	if (!(text = safe(endian_4(sect->offset), endian_4(sect->size))))
 		return (errors(ERR_FILE, "bad text offset"));
 
-	hexdump_text(text, sect->offset, sect->size);
+	hexdump_text(text, endian_4(sect->addr), endian_4(sect->size));
 	return (BOOL_TRUE);
 }
 
@@ -58,10 +56,10 @@ static bool		print_section_64(const size_t offset, \
 
 	if (!(sect = safe(offset, sizeof(*sect))))
 		return (errors(ERR_FILE, "bad section offset"));
-	if (!(text = safe(sect->offset, sect->size)))
+	if (!(text = safe(endian_4(sect->offset), endian_8(sect->size))))
 		return (errors(ERR_FILE, "bad text offset"));
 
-	hexdump_text(text, sect->offset, sect->size);
+	hexdump_text(text, endian_8(sect->addr), endian_8(sect->size));
 	return (BOOL_TRUE);
 }
 
@@ -109,10 +107,12 @@ int				main(int ac, char **av)
 {
 	if (ac < 2)
 	{
+		ft_printf("%s:\n", DEFAULT_TARGET);
 		extract_macho(DEFAULT_TARGET, &otool_gatherer);
 	}
 	else if (*++av)
 	{
+		ft_printf("%s:\n", *av);
 		extract_macho(*av, &otool_gatherer);
 		main(ac, av);
 	}

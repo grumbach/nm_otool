@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/04/29 21:37:30 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/05/02 00:10:42 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CC = gcc
 
 # CFLAGS = -Wall -Wextra -Werror
 
-COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c
+COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c endian.c
 
 NM_SRC = nm.c ${COMMON_SRC}
 
@@ -118,6 +118,16 @@ test: libft/libft.a
 	-I. -o ${NM_NAME} $(addprefix srcs/, ${NM_SRC})
 	@${CC} -g ${INCLUDES} -fsanitize=address ${LIB} \
 	-I. -o ${OTOOL_NAME} $(addprefix srcs/, ${OTOOL_SRC})
+
+odiff: ft_otool
+	@./ft_otool ft_otool > /tmp/ft_nmotool_diff
+	@otool -t ft_otool > /tmp/ft_nmotool_daff
+	@diff /tmp/ft_nmotool_diff /tmp/ft_nmotool_daff
+
+ndiff: ft_nm
+	@./ft_nm ft_nm > /tmp/ft_nmotool_diff
+	@nm ft_nm > /tmp/ft_nmotool_daff
+	@diff /tmp/ft_nmotool_diff /tmp/ft_nmotool_daff
 
 re: fclean all
 

@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 22:30:11 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/29 21:33:22 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/02 18:56:30 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 		sizeof(struct mach_header),
 		sizeof(struct mach_header_64)
 	};
-	struct mach_header		*macho;//32 and 64 have the same attributes
+	struct mach_header		*macho;
 	struct load_command		*lc;
 	uint32_t				ncmds;
 	size_t					offset;
@@ -36,12 +36,12 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 		return (errors(ERR_FILE, "bad macho header offset"));
 	if (!(lc = safe(offset, sizeof(*lc))))
 		return (errors(ERR_FILE, "bad load command offset"));
-	ncmds = macho->ncmds;
+	ncmds = endian_4(macho->ncmds);
 	while (ncmds--)
 	{
-		if (lc->cmd == target && !func_ptr(offset))
+		if (endian_4(lc->cmd) == target && !func_ptr(offset))
 			return (errors(ERR_THROW, "in _iterate_lc"));
-		offset += lc->cmdsize;
+		offset += endian_4(lc->cmdsize);
 		if (!(lc = safe(offset, sizeof(*lc))))
 			return (errors(ERR_FILE, "bad load command offset"));
 	}
@@ -59,7 +59,7 @@ bool			iterate_sections(const size_t start_offset, \
 					const char *target_segment, const char *target_section, \
 					t_section_manager func_ptr)
 {
-	static uint32_t				section_index = 1;
+	static uint32_t				section_index = 1;//TODO warning multiple files!
 	struct segment_command		*seg;
 	struct section				*sect;
 	size_t						offset;
@@ -70,12 +70,12 @@ bool			iterate_sections(const size_t start_offset, \
 	offset = start_offset + sizeof(*seg);
 	if (!(sect = safe(offset, sizeof(*sect))))
 		return (errors(ERR_FILE, "bad section offset"));
-	if (!target_segment || ft_strncmp(seg->segname, target_segment, 16))
+	if (!target_segment || !ft_strncmp(seg->segname, target_segment, 16))
 	{
-		nsects = seg->nsects;
+		nsects = endian_4(seg->nsects);
 		while (nsects--)
 		{
-			if ((!target_section || ft_strncmp(sect->sectname, target_section, 16))
+			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
 				&& !func_ptr(offset, section_index))
 				return (errors(ERR_THROW, "in _iterate_sections"));
 			section_index += 1;
@@ -91,7 +91,7 @@ bool			iterate_sections_64(const size_t start_offset, \
 					const char *target_segment, const char *target_section, \
 					t_section_manager func_ptr)
 {
-	static uint32_t				section_index = 1;
+	static uint32_t				section_index = 1;//TODO warning multiple files!
 	struct segment_command_64	*seg;
 	struct section_64			*sect;
 	size_t						offset;
@@ -104,7 +104,7 @@ bool			iterate_sections_64(const size_t start_offset, \
 		return (errors(ERR_FILE, "bad section offset"));
 	if (!target_segment || !ft_strncmp(seg->segname, target_segment, 16))
 	{
-		nsects = seg->nsects;
+		nsects = endian_4(seg->nsects);
 		while (nsects--)
 		{
 			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))

@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:41:33 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/28 19:25:12 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/02 23:14:06 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define NM_OTOOL_H
 
 /*
-** ------------------------------- includes ------------------------------------
+** ------------------------------- Includes ------------------------------------
 */
 
 # include <sys/mman.h>
@@ -29,7 +29,7 @@
 # include "libft.h"
 
 /*
-** ------------------------------- error types ---------------------------------
+** ------------------------------- Constants -----------------------------------
 */
 
 # define BOOL_TRUE			1
@@ -50,28 +50,47 @@
 # define ARCHIVE_MAGIC		0x72613C21
 
 /*
-** ------------------------------- typedefs ------------------------------------
+** ------------------------------- Typedefs ------------------------------------
 */
 
-typedef bool	(*t_gatherer)(const bool is_64);
-typedef bool	(*t_lc_manager)(const size_t offset);
-typedef bool	(*t_section_manager)(const size_t offset, \
-					const uint32_t section_index);
+typedef bool	(*t_fat_magic_retriever)(uint32_t, size_t, bool*, uint64_t*);
+typedef bool	(*t_gatherer)(const bool);
+typedef bool	(*t_lc_manager)(const size_t);
+typedef bool	(*t_section_manager)(const size_t,const uint32_t);
 
 typedef struct	s_safe_pointer
 {
 	void		*ptr;
 	size_t		filesize;
+	size_t		start_offset;
 }				t_safe_pointer;
 
 /*
-** ------------------------------- Text symbols --------------------------------
+** ------------------------------- Text Symbols --------------------------------
 */
 
-bool			read_file(const char *filename);
-bool			extract_macho(const char *filename, t_gatherer func);
+/*
+** Safe pointers management
+*/
 
 void			*safe(const uint64_t offset, const size_t size);
+void			set_start_offset(size_t new_start_offset);
+bool			read_file(const char *filename);
+bool			free_file(void);
+
+/*
+** Endian management
+*/
+
+void			endian_little_mode(bool is_little_endian);
+uint32_t		endian_4(uint32_t a);
+uint64_t		endian_8(uint64_t a);
+
+/*
+** General functions
+*/
+
+bool			extract_macho(const char *filename, t_gatherer func);
 bool			errors(const int err, const char *str);
 
 /*

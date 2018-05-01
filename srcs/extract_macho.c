@@ -6,56 +6,95 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/04/29 22:04:30 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/02 22:30:41 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 
-/*
-** fat managers, call a t_gatherer for the default arch (_64 then _32)
-*/
-
-static bool		manage_fat(t_gatherer func_ptr)//TODO not operationnal
+static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
+					bool *is_little_endian, uint64_t *target_offset)
 {
-	struct fat_header		*header;
-	struct fat_arch			*arch;
-	uint32_t				nfat_arch;
-	size_t					offset;
+	struct fat_arch_64		*arch;
+	uint32_t				*magic;
 
-	if (!(header = safe(0, sizeof(*header))))
-		return (errors(ERR_FILE, "missing fat header"));
-	offset = sizeof(*header);
-	nfat_arch = header->nfat_arch;
+	// loop through architectures looking for known magic
 	while (nfat_arch--)
 	{
+		//retrieve safe pointers
 		if (!(arch = safe(offset, sizeof(*arch))))
 			return (errors(ERR_FILE, "bad fat arch offset"));
-		func_ptr(BOOL_FALSE);//TODO call for the right one (currently calling all!)
-		offset += arch->size;
+		if (!(magic = safe(endian_8(arch->offset), sizeof(*magic))))
+			return (errors(ERR_FILE, "bad fat arch magic offset"));
+
+		// check for known magic
+		if ((*is_little_endian = !(*magic == MH_MAGIC_64)) || *magic == MH_CIGAM_64)
+			*target_offset = endian_8(arch->offset);
+		else if (!target_offset && \
+			((*is_little_endian = !(*magic == MH_MAGIC)) || *magic == MH_CIGAM))
+			*target_offset = endian_8(arch->offset);
+		offset += endian_8(arch->size);
 	}
 	return (BOOL_TRUE);
 }
 
-static bool		manage_fat_64(t_gatherer func_ptr)//TODO not operationnal
+static bool		known_magic_retriever_32(uint32_t nfat_arch, size_t offset, \
+					bool *is_little_endian, uint64_t *target_offset)
 {
-	struct fat_header		*header;
-	struct fat_arch_64		*arch;
-	uint32_t				nfat_arch;
-	size_t					offset;
+	struct fat_arch			*arch;
+	uint32_t				*magic;
 
-	if (!(header = safe(0, sizeof(*header))))
-		return (errors(ERR_FILE, "missing fat header"));
-	offset = sizeof(*header);
-	nfat_arch = header->nfat_arch;
+	// loop through architectures looking for known magic
 	while (nfat_arch--)
 	{
+		//retrieve safe pointers
 		if (!(arch = safe(offset, sizeof(*arch))))
 			return (errors(ERR_FILE, "bad fat arch offset"));
-		func_ptr(BOOL_TRUE);//TODO call for the right one (currently calling all!)
-		offset += arch->size;
+		if (!(magic = safe(endian_4(arch->offset), sizeof(*magic))))
+			return (errors(ERR_FILE, "bad fat arch magic offset"));
+
+		// check for known magic
+		if ((*is_little_endian = !(*magic == MH_MAGIC_64)) || *magic == MH_CIGAM_64)
+			*target_offset = endian_4(arch->offset);
+		else if (!target_offset && \
+			((*is_little_endian = !(*magic == MH_MAGIC)) || *magic == MH_CIGAM))
+			*target_offset = endian_4(arch->offset);
+		offset += endian_4(arch->size);
 	}
 	return (BOOL_TRUE);
+}
+
+/*
+** fat management, call a t_gatherer for the favorite known arch (_64 then _32)
+*/
+
+static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
+{
+	static const t_fat_magic_retriever	find_the_magic[2] =
+	{
+		&known_magic_retriever_32,
+		&known_magic_retriever_64
+	};
+	struct fat_header					*header;
+	bool								is_little_endian;
+	uint64_t							target_offset;
+
+	//read header
+	target_offset = 0;
+	if (!(header = safe(0, sizeof(*header))))
+		return (errors(ERR_FILE, "missing fat header"));
+
+	//find the magic
+	if (!find_the_magic[is_64](endian_4(header->nfat_arch), \
+		sizeof(*header), &is_little_endian, &target_offset))
+		return (errors(ERR_THROW, "in _manage_fat"));
+
+	//do the mach-o parsing magic
+	if (!target_offset)
+		return (errors(ERR_FILE, "no known architectures found"));
+	set_start_offset(target_offset);
+	endian_little_mode(is_little_endian);
+	return (func_ptr(BOOL_FALSE));
 }
 
 /*
@@ -64,6 +103,10 @@ static bool		manage_fat_64(t_gatherer func_ptr)//TODO not operationnal
 
 static bool		manage_archive(t_gatherer func_ptr)
 {
+	// TODO print smth like "\nlibft/libft.a(ft_printf_buf.o):\n"
+
+	// TODO set endian for every object in the archive
+
 	return (errors(ERR_FILE, "you're arch"));//TODO actually manage smth
 }
 
@@ -74,27 +117,34 @@ static bool		manage_archive(t_gatherer func_ptr)
 bool			extract_macho(const char *filename, t_gatherer func_ptr)
 {
 	uint32_t	*magic;
+	bool		return_value;
 
+	//map file
 	if (!read_file(filename))
 		return (errors(ERR_THROW, "in _read_file"));
 	if (!(magic = safe(0, sizeof(uint32_t))))
-		return (errors(ERR_FILE, "missing the magic"));
+		return (errors(ERR_FILE, "missing magic"));
 
+	//detect endian
+	endian_little_mode(*magic == FAT_CIGAM || *magic == FAT_CIGAM_64 || \
+		*magic == MH_CIGAM || *magic == MH_CIGAM_64);
+
+	//check magic
 	if (*magic == ARCHIVE_MAGIC)
-		return (manage_archive(func_ptr));
+		return_value = manage_archive(func_ptr);
+	else if (*magic == MH_MAGIC || *magic == MH_CIGAM)
+		return_value = func_ptr(BOOL_FALSE);
+	else if (*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64)
+		return_value = func_ptr(BOOL_TRUE);
+	else if (*magic == FAT_MAGIC || *magic == FAT_CIGAM)
+		return_value = manage_fat(func_ptr, BOOL_FALSE);
+	else if (*magic == FAT_MAGIC_64 || *magic == FAT_CIGAM_64)
+		return_value = manage_fat(func_ptr, BOOL_TRUE);
+	else
+		return_value = errors(ERR_FILE, "unknown file format");
 
-	ft_printf("%s:\n", filename);
-
-	if (*magic == MH_MAGIC || *magic == MH_CIGAM)
-		return (func_ptr(BOOL_FALSE));
-	if (*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64)
-		return (func_ptr(BOOL_TRUE));
-	if (*magic == FAT_MAGIC || *magic == FAT_CIGAM)
-		return (manage_fat(func_ptr));
-	if (*magic == FAT_MAGIC_64 || *magic == FAT_CIGAM_64)
-		return (manage_fat_64(func_ptr));
-
-	return (errors(ERR_FILE, "unknown file format"));
-
-	//TODO munmap(safe(0, 0));
+	//unmap file
+	if (!free_file())
+		return (errors(ERR_THROW, "in _free_file"));
+	return (return_value);
 }
