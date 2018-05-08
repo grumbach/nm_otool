@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 22:30:11 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/02 18:56:30 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/06 16:32:52 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ bool			iterate_sections(const size_t start_offset, \
 					const char *target_segment, const char *target_section, \
 					t_section_manager func_ptr)
 {
-	static uint32_t				section_index = 1;//TODO warning multiple files!
 	struct segment_command		*seg;
 	struct section				*sect;
 	size_t						offset;
@@ -76,9 +75,8 @@ bool			iterate_sections(const size_t start_offset, \
 		while (nsects--)
 		{
 			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
-				&& !func_ptr(offset, section_index))
+				&& !func_ptr(offset))
 				return (errors(ERR_THROW, "in _iterate_sections"));
-			section_index += 1;
 			offset += sizeof(*sect);
 			if (!(sect = safe(offset, sizeof(*sect))))
 				return (errors(ERR_FILE, "bad section offset"));
@@ -91,7 +89,6 @@ bool			iterate_sections_64(const size_t start_offset, \
 					const char *target_segment, const char *target_section, \
 					t_section_manager func_ptr)
 {
-	static uint32_t				section_index = 1;//TODO warning multiple files!
 	struct segment_command_64	*seg;
 	struct section_64			*sect;
 	size_t						offset;
@@ -108,9 +105,8 @@ bool			iterate_sections_64(const size_t start_offset, \
 		while (nsects--)
 		{
 			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
-				&& !func_ptr(offset, section_index))
+				&& !func_ptr(offset))
 				return (errors(ERR_THROW, "in _iterate_sections_64"));
-			section_index += 1;
 			offset += sizeof(*sect);
 			if (!(sect = safe(offset, sizeof(*sect))))
 				return (errors(ERR_FILE, "bad section offset"));

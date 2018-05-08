@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 17:42:24 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/02 21:47:41 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/05 19:28:12 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void		hexdump_text(const char *text, uint64_t offset, uint64_t size)
 ** t_section_manager
 */
 
-static bool		print_section(const size_t offset, const uint32_t section_index)
+static bool		print_section(const size_t offset)
 {
 	struct section		*sect;
 	char				*text;
@@ -48,8 +48,7 @@ static bool		print_section(const size_t offset, const uint32_t section_index)
 	return (BOOL_TRUE);
 }
 
-static bool		print_section_64(const size_t offset, \
-					const uint32_t section_index)
+static bool		print_section_64(const size_t offset)
 {
 	struct section_64	*sect;
 	char				*text;
