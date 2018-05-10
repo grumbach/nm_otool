@@ -6,11 +6,10 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/01 23:54:56 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/02 22:27:44 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/10 02:59:49 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "endian.h"
 #include "nm_otool.h"
 
 static inline bool	*singleton(void)
@@ -28,12 +27,24 @@ void				endian_little_mode(bool is_little_endian)
 	*endian = is_little_endian;
 }
 
-uint32_t			endian_4(uint32_t a)
+uint32_t			endian_4(uint32_t n)
 {
-	return (*singleton() ? ENDIAN_4(a) : a);
+	if (*singleton())
+		return ((n >> 24) | ((n & 0xff0000) >> 8) | \
+			((n & 0xff00) << 8) | (n << 24));
+	return (n);
 }
 
-uint64_t			endian_8(uint64_t a)
+uint64_t			endian_8(uint64_t n)
 {
-	return (*singleton() ? ENDIAN_8(a) : a);
+	if (*singleton())
+		return ((n & 0xff00000000000000) >> 56 \
+			| (n & 0x00ff000000000000) >> 40 \
+			| (n & 0x0000ff0000000000) >> 24 \
+			| (n & 0x000000ff00000000) >> 8 \
+			| (n & 0x00000000ff000000) << 8 \
+			| (n & 0x0000000000ff0000) << 24 \
+			| (n & 0x000000000000ff00) << 40 \
+			| (n & 0x00000000000000ff) << 56);
+	return (n);
 }

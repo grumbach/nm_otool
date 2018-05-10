@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/05/10 01:20:40 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/05/10 03:01:42 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -128,6 +128,8 @@ ndiff: ft_nm
 	@./ft_nm ft_nm > /tmp/ft_nmotool_diff
 	@nm -p ft_nm > /tmp/ft_nmotool_daff
 	@diff /tmp/ft_nmotool_diff /tmp/ft_nmotool_daff
+
+diff: odiff ndiff
 
 re: fclean all
 

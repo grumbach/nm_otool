@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:07 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 02:33:15 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/10 02:40:58 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static char		get_type(const uint8_t n_type, const uint8_t n_sect, \
 	else if (n_type_field == N_SECT)
 	{
 		if (!(type = sections_character_table(FIRST_BIT_ON_64 | n_sect)))
-			return (errors(ERR_THROW, "in _get_type"));
+			return (errors(ERR_THROW, __func__));
 	}
 	else if (n_type_field == N_PBUD)
 		type = 'u';
@@ -105,7 +105,7 @@ static bool		store_values(const struct nlist *nlist, const uint64_t n_value, \
 
 	// check if type is invalid
 	if (!type)
-		return (errors(ERR_THROW, "in _manage_symtab_64"));
+		return (errors(ERR_THROW, __func__));
 	// check if stringtable was invalid to begin with
 	if (!safe(stroff, strsize))
 		return (errors(ERR_FILE, "bad stringtable offset or size"));
@@ -113,7 +113,7 @@ static bool		store_values(const struct nlist *nlist, const uint64_t n_value, \
 	if (!str || str_offset < stroff || str_offset > stroff + strsize)
 	{
 		str = "bad string offset";
-		str_max_size = 18;
+		str_max_size = 17;
 	}
 
 	//TODO store values instead of printing
@@ -148,7 +148,7 @@ static bool		manage_symtab_32(const size_t offset)
 	{
 		if (!(store_values(&nlist[i], endian_4(nlist[i].n_value), \
 			endian_4(sym->stroff), endian_4(sym->strsize))))
-			return (errors(ERR_THROW, "in _manage_symtab_64"));
+			return (errors(ERR_THROW, __func__));
 		i++;
 	}
 	//TODO sort stored values, print and free
@@ -175,7 +175,7 @@ static bool		manage_symtab_64(const size_t offset)
 	{
 		if (!(store_values((struct nlist*)&nlist[i], endian_8(nlist[i].n_value), \
 			endian_4(sym->stroff), endian_4(sym->strsize))))
-			return (errors(ERR_THROW, "in _manage_symtab_64"));
+			return (errors(ERR_THROW, __func__));
 		i++;
 	}
 	//TODO sort stored values, print and free
@@ -195,7 +195,7 @@ static bool		manage_segment_32(const size_t offset)
 {
 	if (!(iterate_sections(offset, NULL, NULL, \
 		(t_section_manager)&sections_character_table)))
-		return (errors(ERR_THROW, "in _manage_segment_32"));
+		return (errors(ERR_THROW, __func__));
 	return (BOOL_TRUE);
 }
 
@@ -203,7 +203,7 @@ static bool		manage_segment_64(const size_t offset)
 {
 	if (!(iterate_sections_64(offset, NULL, NULL, \
 		(t_section_manager)&sections_character_table)))
-		return (errors(ERR_THROW, "in _manage_segment_64"));
+		return (errors(ERR_THROW, __func__));
 	return (BOOL_TRUE);
 }
 
@@ -229,10 +229,10 @@ static bool		nm_gatherer(const bool is_64)
 	sections_character_table(0);
 	// fill sections table
 	if (!(iterate_lc(is_64, lc_seg[is_64], segment_manager[is_64])))
-		return (errors(ERR_THROW, "in _nm_gatherer"));
+		return (errors(ERR_THROW, __func__));
 	// manage symtab
 	if (!(iterate_lc(is_64, LC_SYMTAB, symtab_manager[is_64])))
-		return (errors(ERR_THROW, "in _nm_gatherer"));
+		return (errors(ERR_THROW, __func__));
 
 	return (BOOL_TRUE);
 }

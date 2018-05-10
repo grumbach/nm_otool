@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 02:21:01 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/10 02:51:47 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 			return (errors(ERR_FILE, "bad fat arch magic offset"));
 
 		// check for known magic
-		if ((*is_little_endian = !(*magic == MH_MAGIC_64)) || *magic == MH_CIGAM_64)
+		if ((*is_little_endian = !(*magic == MH_MAGIC_64)) || \
+			*magic == MH_CIGAM_64)
 			*target_offset = endian_8(arch->offset);
 		else if (!target_offset && \
 			((*is_little_endian = !(*magic == MH_MAGIC)) || *magic == MH_CIGAM))
@@ -87,7 +88,7 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 	//find the magic
 	if (!find_the_magic[is_64](endian_4(header->nfat_arch), \
 		sizeof(*header), &is_little_endian, &target_offset))
-		return (errors(ERR_THROW, "in _manage_fat"));
+		return (errors(ERR_THROW, __func__));
 
 	//do the mach-o parsing magic
 	if (!target_offset)
@@ -108,7 +109,7 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 
 	//map file
 	if (!read_file(filename))
-		return (errors(ERR_THROW, "in _read_file"));
+		return (errors(ERR_THROW, __func__));
 	if (!(magic = safe(0, sizeof(uint32_t))))
 		return (errors(ERR_FILE, "missing magic"));
 
@@ -132,6 +133,6 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 
 	//unmap file
 	if (!free_file())
-		return (errors(ERR_THROW, "in _free_file"));
+		return (errors(ERR_THROW, __func__));
 	return (return_value);
 }
