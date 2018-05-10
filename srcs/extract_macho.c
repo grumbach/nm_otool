@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/02 22:30:41 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/10 02:21:01 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,19 +98,6 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 }
 
 /*
-** archive manager: calls a t_gatherer for each object found
-*/
-
-static bool		manage_archive(t_gatherer func_ptr)
-{
-	// TODO print smth like "\nlibft/libft.a(ft_printf_buf.o):\n"
-
-	// TODO set endian for every object in the archive
-
-	return (errors(ERR_FILE, "you're arch"));//TODO actually manage smth
-}
-
-/*
 ** extract_macho and call a t_gatherer
 */
 
@@ -131,7 +118,7 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 
 	//check magic
 	if (*magic == ARCHIVE_MAGIC)
-		return_value = manage_archive(func_ptr);
+		return_value = 42;//TODO manage_archive(func_ptr, filename);
 	else if (*magic == MH_MAGIC || *magic == MH_CIGAM)
 		return_value = func_ptr(BOOL_FALSE);
 	else if (*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64)

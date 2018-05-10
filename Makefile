@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/05/08 19:28:52 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/05/10 01:20:40 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OTOOL_NAME = ft_otool
 
 CC = gcc
 
-# CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address,undefined
 
 COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c endian.c
 
@@ -114,9 +114,9 @@ fclean: clean
 	@/bin/rm -Rf ${OTOOL_NAME}.dSYM
 
 test: libft/libft.a
-	@${CC} -g ${INCLUDES} -fsanitize=address ${LIB} \
+	@${CC} -g ${INCLUDES} -fsanitize=address,undefined ${LIB} \
 	-I. -o ${NM_NAME} $(addprefix srcs/, ${NM_SRC})
-	@${CC} -g ${INCLUDES} -fsanitize=address ${LIB} \
+	@${CC} -g ${INCLUDES} -fsanitize=address,undefined ${LIB} \
 	-I. -o ${OTOOL_NAME} $(addprefix srcs/, ${OTOOL_SRC})
 
 odiff: ft_otool

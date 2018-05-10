@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/02 18:36:18 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/09 20:56:56 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void							*safe(const uint64_t offset, const size_t size)
 	safe = singleton();
 	return ((void *) \
 		((size_t)(safe->ptr + safe->start_offset + offset) * \
-		(safe->start_offset + offset + size < safe->filesize)));
+		(safe->start_offset + offset + size <= safe->filesize)));
 }
 
 void							set_start_offset(size_t new_start_offset)
