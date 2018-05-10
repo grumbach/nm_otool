@@ -65,7 +65,7 @@ bool							read_file(const char *filename)
 	safe->ptr = ptr;
 	safe->filesize = buf.st_size;
 	safe->start_offset = 0;
-	return (BOOL_TRUE);
+	return (true);
 }
 
 bool							free_file(void)
@@ -75,5 +75,5 @@ bool							free_file(void)
 	safe = singleton();
 	if (munmap(safe->ptr, safe->filesize))
 		return (errors(ERR_SYS, "munmap failed"));
-	return (BOOL_TRUE);
+	return (true);
 }

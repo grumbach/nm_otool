@@ -45,7 +45,7 @@ static bool		print_section(const size_t offset)
 		return (errors(ERR_FILE, "bad text offset"));
 
 	hexdump_text(text, endian_4(sect->addr), endian_4(sect->size));
-	return (BOOL_TRUE);
+	return (true);
 }
 
 static bool		print_section_64(const size_t offset)
@@ -59,7 +59,7 @@ static bool		print_section_64(const size_t offset)
 		return (errors(ERR_FILE, "bad text offset"));
 
 	hexdump_text(text, endian_8(sect->addr), endian_8(sect->size));
-	return (BOOL_TRUE);
+	return (true);
 }
 
 /*
@@ -71,7 +71,7 @@ static bool		manage_segment(const size_t offset)
 	if (!(iterate_sections(offset, OTOOL_SEGMENT, OTOOL_SECTION, \
 		&print_section)))
 		return (errors(ERR_THROW, __func__));
-	return (BOOL_TRUE);
+	return (true);
 }
 
 static bool		manage_segment_64(const size_t offset)
@@ -79,7 +79,7 @@ static bool		manage_segment_64(const size_t offset)
 	if (!(iterate_sections_64(offset, OTOOL_SEGMENT, OTOOL_SECTION, \
 		&print_section_64)))
 		return (errors(ERR_THROW, __func__));
-	return (BOOL_TRUE);
+	return (true);
 }
 
 /*

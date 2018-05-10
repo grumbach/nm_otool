@@ -45,7 +45,7 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 		if (!(lc = safe(offset, sizeof(*lc))))
 			return (errors(ERR_FILE, "bad load command offset"));
 	}
-	return (BOOL_TRUE);
+	return (true);
 }
 
 /*
@@ -82,7 +82,7 @@ bool			iterate_sections(const size_t start_offset, \
 				return (errors(ERR_FILE, "bad section offset"));
 		}
 	}
-	return (BOOL_TRUE);
+	return (true);
 }
 
 bool			iterate_sections_64(const size_t start_offset, \
@@ -112,5 +112,5 @@ bool			iterate_sections_64(const size_t start_offset, \
 				return (errors(ERR_FILE, "bad section offset"));
 		}
 	}
-	return (BOOL_TRUE);
+	return (true);
 }
