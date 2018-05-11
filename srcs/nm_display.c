@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 03:08:08 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 23:38:02 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/11 05:12:25 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,38 +62,53 @@ bool					nm_symbol_allocate(t_sym_sort *sorted_symbols, \
 void					nm_store_value(t_sym_sort *sorted_symbols, \
 							t_symbol *new_symbol)
 {
-	//TODO conditionnal store depending on flags
+	uint8_t				flags;
 
-	sorted_symbols->symbols[sorted_symbols->nsyms_sort] = *new_symbol;
-	sorted_symbols->symbols_sort[sorted_symbols->nsyms_sort] = \
-		&sorted_symbols->symbols[sorted_symbols->nsyms_sort];
-
-	sorted_symbols->nsyms_sort++;
+	flags = *singleton();
+	if ((NM_FLAG_A(flags) || new_symbol->type != '-') && \
+		!(NM_FLAG_G(flags) && !ft_isupper(new_symbol->type)) && \
+		!(NM_FLAG_U(flags) && \
+		(new_symbol->type != 'u' && new_symbol->type != 'U')) && \
+		!(NM_FLAG_UU(flags) && \
+		(new_symbol->type == 'u' || new_symbol->type == 'U')))
+	{
+		sorted_symbols->symbols[sorted_symbols->nsyms_sort] = *new_symbol;
+		sorted_symbols->symbols_sort[sorted_symbols->nsyms_sort] = \
+			&sorted_symbols->symbols[sorted_symbols->nsyms_sort];
+		sorted_symbols->nsyms_sort++;
+	}
 }
 
 void					nm_sort_print_free(t_sym_sort *sorted_symbols)
 {
-	size_t				i;
+	uint8_t				flags;
 	t_symbol			*curr;
+	char				*str;
+	size_t				i;
 
 	//sort
-	//TODO actually sort
-
+	flags = *singleton();
+	if (!NM_FLAG_P(flags))
+		nm_selection_sort(sorted_symbols, \
+			(!!NM_FLAG_R(flags) + (!!NM_FLAG_N(flags)) * 2));
 	//print
 	i = 0;
 	while (i < sorted_symbols->nsyms_sort)
 	{
 		curr = sorted_symbols->symbols_sort[i];
+		str = curr->string ? curr->string : "bad string index";
+
 		//TODO _32 bits padding
-		if (curr->offset)
+		if (NM_FLAG_J(flags) || NM_FLAG_U(flags))
+			ft_printf("%s\n", str);
+		else if (curr->offset)
 			ft_printf("%016lx %c %.*s\n", curr->offset, curr->type, \
-				curr->str_max_size, curr->string);
+				curr->str_max_size, str);
 		else
 			ft_printf("                 %c %.*s\n", curr->type, \
-				curr->str_max_size, curr->string);
+				curr->str_max_size, str);
 		i++;
 	}
-
 	//free
 	free(sorted_symbols->symbols);
 	free(sorted_symbols->symbols_sort);

@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/05/10 21:13:59 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/05/11 03:42:08 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ CFLAGS = -Wall -Wextra -Werror -fsanitize=address,undefined
 
 COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c endian.c
 
-NM_SRC = nm.c nm_display.c nm_sections_character_table.c ${COMMON_SRC}
+NM_SRC = nm.c nm_display.c nm_sections_character_table.c nm_sort.c ${COMMON_SRC}
 
 OTOOL_SRC = otool.c ${COMMON_SRC}
 
@@ -126,7 +126,7 @@ odiff: ft_otool
 
 ndiff: ft_nm
 	@./ft_nm ft_nm > /tmp/ft_nmotool_diff
-	@nm -p ft_nm > /tmp/ft_nmotool_daff
+	@nm ft_nm > /tmp/ft_nmotool_daff
 	@diff /tmp/ft_nmotool_diff /tmp/ft_nmotool_daff
 
 diff: odiff ndiff

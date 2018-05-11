@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 20:19:14 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 23:35:48 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/11 02:06:17 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,18 @@ bool		nm_set_flag(const char *av);
 bool		nm_symbol_allocate(t_sym_sort *sorted_symbols, const uint64_t nsyms);
 void		nm_store_value(t_sym_sort *sorted_symbols, t_symbol *new_symbol);
 void		nm_sort_print_free(t_sym_sort *sorted_symbols);
+
+/*
+** in nm_sort.c
+**   nm_selection_sort: sorts sorted_symbols->symbols_sort with sort_type
+**   (0) alphabetically: no flags
+**   (1) reverse_alphabetically: -r
+**   (2) numerically: -n
+**   (3) reverse_numerically: -n -r
+*/
+
+
+void		nm_selection_sort(t_sym_sort *sorted_symbols, uint8_t sort_type);
 
 /*
 ** in nm_sections_character_table.c:
