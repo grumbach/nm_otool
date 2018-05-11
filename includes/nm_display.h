@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 20:19:14 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/11 02:06:17 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/11 06:37:13 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,8 @@ typedef struct	s_sym_sort
 
 bool		nm_set_flag(const char *av);
 bool		nm_symbol_allocate(t_sym_sort *sorted_symbols, const uint64_t nsyms);
-void		nm_store_value(t_sym_sort *sorted_symbols, t_symbol *new_symbol);
-void		nm_sort_print_free(t_sym_sort *sorted_symbols);
+void		nm_store_value(t_sym_sort *sorted_symbols, const t_symbol *new_symbol);
+void		nm_sort_print_free(t_sym_sort *sorted_symbols, const int padding);
 
 /*
 ** in nm_sort.c

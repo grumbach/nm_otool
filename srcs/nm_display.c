@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 03:08:08 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/11 05:12:25 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/11 10:46:25 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ bool					nm_symbol_allocate(t_sym_sort *sorted_symbols, \
 }
 
 void					nm_store_value(t_sym_sort *sorted_symbols, \
-							t_symbol *new_symbol)
+							const t_symbol *new_symbol)
 {
 	uint8_t				flags;
 
@@ -79,11 +79,11 @@ void					nm_store_value(t_sym_sort *sorted_symbols, \
 	}
 }
 
-void					nm_sort_print_free(t_sym_sort *sorted_symbols)
+void					nm_sort_print_free(t_sym_sort *sorted_symbols, \
+							const int padding)
 {
 	uint8_t				flags;
 	t_symbol			*curr;
-	char				*str;
 	size_t				i;
 
 	//sort
@@ -96,17 +96,14 @@ void					nm_sort_print_free(t_sym_sort *sorted_symbols)
 	while (i < sorted_symbols->nsyms_sort)
 	{
 		curr = sorted_symbols->symbols_sort[i];
-		str = curr->string ? curr->string : "bad string index";
-
-		//TODO _32 bits padding
 		if (NM_FLAG_J(flags) || NM_FLAG_U(flags))
-			ft_printf("%s\n", str);
-		else if (curr->offset)
-			ft_printf("%016lx %c %.*s\n", curr->offset, curr->type, \
-				curr->str_max_size, str);
+			ft_printf("%s\n", curr->string);
+		else if (curr->offset || !(curr->type == 'u' || curr->type == 'U'))
+			ft_printf("%0*lx %c %.*s\n", padding, curr->offset, curr->type, \
+				curr->str_max_size, curr->string);
 		else
-			ft_printf("                 %c %.*s\n", curr->type, \
-				curr->str_max_size, str);
+			ft_printf("  %*c %.*s\n", padding, curr->type, \
+				curr->str_max_size, curr->string);
 		i++;
 	}
 	//free

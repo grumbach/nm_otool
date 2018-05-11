@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 21:04:50 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 23:38:44 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/11 10:44:43 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,11 @@ static char	get_type(const uint8_t n_type, const uint8_t n_sect, \
 		type = 'u';
 	//n_type_field types
 	if (n_type_field == N_UNDF)
-		type = n_value ? 'c' : 'u';
+		type = n_value ? 'c' : 'u';//TODO correct condition
 	else if (n_type_field == N_ABS)
 		type = 'a';
 	else if (n_type_field == N_PBUD)
-		type = 'u';
+		type = '-';//TODO correct condition
 	else if (n_type_field == N_INDR)
 		type = 'i';
 	else if (n_type_field == N_SECT && \
@@ -92,6 +92,8 @@ static char	get_type(const uint8_t n_type, const uint8_t n_sect, \
 /*
 ** store symbol data
 */
+
+static const char g_nm_invalid_string[18] = "bad string index";
 
 void		nm_extract_values(const struct nlist *nlist, const uint64_t n_value,
 				const struct symtab_command *sym, t_sym_sort *sorted_symbols)
@@ -108,7 +110,7 @@ void		nm_extract_values(const struct nlist *nlist, const uint64_t n_value,
 
 	// check if str is not in stringtable
 	if (str_offset < stroff || str_offset > stroff + strsize)
-		new_symbol.string = NULL;
+		new_symbol.string = (char *)g_nm_invalid_string;
 
 	nm_store_value(sorted_symbols, &new_symbol);
 }

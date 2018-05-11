@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:48 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 20:52:35 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/11 07:36:20 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ bool				errors(const int err, const char *str)
 {
 	static const char	*msg[ERR_NUMBER] =
 	{
-		"Error: ",
+		"Fatal Error: ",
 		"Bad usage: ",
 		"Bad file: ",
 		"  -> in _"
@@ -24,7 +24,7 @@ bool				errors(const int err, const char *str)
 
 	ft_putstr_fd(msg[err], 2);
 	ft_putendl_fd(str, 2);
-	if (ERR_USAGE)
+	if (err == ERR_USAGE)
 	{
 		ft_putendl_fd("usage: ./ft_nm [flags ...] [file ...] ", 2);
 		ft_putendl_fd("  -a -- Display  all symbol table entries", 2);

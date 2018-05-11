@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:07 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 23:07:18 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/11 06:20:31 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static bool		manage_symtab_32(const size_t offset)
 			endian_4(nlist[i].n_value), sym, &sorted_symbols);
 		i++;
 	}
-	nm_sort_print_free(&sorted_symbols);
+	nm_sort_print_free(&sorted_symbols, 8);
 	return (true);
 }
 
@@ -79,7 +79,7 @@ static bool		manage_symtab_64(const size_t offset)
 			endian_8(nlist[i].n_value), sym, &sorted_symbols);
 		i++;
 	}
-	nm_sort_print_free(&sorted_symbols);
+	nm_sort_print_free(&sorted_symbols, 16);
 	return (true);
 }
 

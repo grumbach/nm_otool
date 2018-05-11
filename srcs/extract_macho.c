@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 02:51:47 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/11 05:42:31 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@ static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 			return (errors(ERR_FILE, "bad fat arch magic offset"));
 
 		// check for known magic
-		if ((*is_little_endian = !(*magic == MH_MAGIC_64)) || \
-			*magic == MH_CIGAM_64)
+		if ((*is_little_endian = (*magic == MH_CIGAM_64)) || \
+			*magic == MH_MAGIC_64)
 			*target_offset = endian_8(arch->offset);
-		else if (!target_offset && \
-			((*is_little_endian = !(*magic == MH_MAGIC)) || *magic == MH_CIGAM))
+		else if (!(*target_offset) && \
+			((*is_little_endian = (*magic == MH_CIGAM)) || *magic == MH_MAGIC))
 			*target_offset = endian_8(arch->offset);
 		offset += endian_8(arch->size);
 	}
@@ -55,10 +55,10 @@ static bool		known_magic_retriever_32(uint32_t nfat_arch, size_t offset, \
 			return (errors(ERR_FILE, "bad fat arch magic offset"));
 
 		// check for known magic
-		if ((*is_little_endian = !(*magic == MH_MAGIC_64)) || *magic == MH_CIGAM_64)
+		if ((*is_little_endian = (*magic == MH_CIGAM_64)) || *magic == MH_MAGIC_64)
 			*target_offset = endian_4(arch->offset);
-		else if (!target_offset && \
-			((*is_little_endian = !(*magic == MH_MAGIC)) || *magic == MH_CIGAM))
+		else if (!(*target_offset) && \
+			((*is_little_endian = (*magic == MH_CIGAM)) || *magic == MH_MAGIC))
 			*target_offset = endian_4(arch->offset);
 		offset += endian_4(arch->size);
 	}
