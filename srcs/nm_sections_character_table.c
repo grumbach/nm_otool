@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 21:04:50 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/11 10:44:43 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/12 23:51:32 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,9 +66,6 @@ static char	get_type(const uint8_t n_type, const uint8_t n_sect, \
 	const int	n_type_field = N_TYPE & n_type;
 	char		type = '?';
 
-	//special types
-	if (N_STAB & n_type)
-		type = '-';
 	if (N_PEXT & n_type)
 		type = 'u';
 	//n_type_field types
@@ -83,6 +80,10 @@ static char	get_type(const uint8_t n_type, const uint8_t n_sect, \
 	else if (n_type_field == N_SECT && \
 		!(type = nm_sections_character_table(FIRST_BIT_ON_64 | n_sect)))
 		type = '?';
+
+	//special types
+	if (N_STAB & n_type)
+		type = '-';
 	//if external set uppercase
 	if (N_EXT & n_type)
 		type = ft_toupper(type);

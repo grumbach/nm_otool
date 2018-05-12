@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:41:33 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/12 21:21:17 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/12 21:51:04 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@
 
 # define OTOOL_SECTION		"__text"
 # define OTOOL_SEGMENT		"__TEXT"
-
-# define ARCHIVE_MAGIC		0x72613C21
 
 # define FIRST_BIT_ON_64	0x8000000000000000L
 

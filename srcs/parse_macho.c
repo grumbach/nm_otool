@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 22:30:11 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 02:40:01 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/12 21:51:55 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,18 +69,16 @@ bool			iterate_sections(const size_t start_offset, \
 	offset = start_offset + sizeof(*seg);
 	if (!(sect = safe(offset, sizeof(*sect))))
 		return (errors(ERR_FILE, "bad section offset"));
-	if (!target_segment || !ft_strncmp(seg->segname, target_segment, 16))
+	nsects = endian_4(seg->nsects);
+	while (nsects--)
 	{
-		nsects = endian_4(seg->nsects);
-		while (nsects--)
-		{
-			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
-				&& !func_ptr(offset))
-				return (errors(ERR_THROW, __func__));
-			offset += sizeof(*sect);
-			if (!(sect = safe(offset, sizeof(*sect))))
-				return (errors(ERR_FILE, "bad section offset"));
-		}
+		if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
+		&& (!target_segment || !ft_strncmp(sect->segname, target_segment, 16))
+		&& !func_ptr(offset))
+			return (errors(ERR_THROW, __func__));
+		offset += sizeof(*sect);
+		if (!(sect = safe(offset, sizeof(*sect))))
+			return (errors(ERR_FILE, "bad section offset"));
 	}
 	return (true);
 }
@@ -99,18 +97,16 @@ bool			iterate_sections_64(const size_t start_offset, \
 	offset = start_offset + sizeof(*seg);
 	if (!(sect = safe(offset, sizeof(*sect))))
 		return (errors(ERR_FILE, "bad section offset"));
-	if (!target_segment || !ft_strncmp(seg->segname, target_segment, 16))
+	nsects = endian_4(seg->nsects);
+	while (nsects--)
 	{
-		nsects = endian_4(seg->nsects);
-		while (nsects--)
-		{
-			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
-				&& !func_ptr(offset))
-				return (errors(ERR_THROW, __func__));
-			offset += sizeof(*sect);
-			if (!(sect = safe(offset, sizeof(*sect))))
-				return (errors(ERR_FILE, "bad section offset"));
-		}
+		if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
+		&& (!target_segment || !ft_strncmp(sect->segname, target_segment, 16))
+		&& !func_ptr(offset))
+			return (errors(ERR_THROW, __func__));
+		offset += sizeof(*sect);
+		if (!(sect = safe(offset, sizeof(*sect))))
+			return (errors(ERR_FILE, "bad section offset"));
 	}
 	return (true);
 }
