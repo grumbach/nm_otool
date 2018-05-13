@@ -134,14 +134,15 @@ _64 uint64_t        n_value;    /* value of this symbol (or stab offset) */
 
 ### Symbol Types
 
-|**Printed char**       |```U```|```A```|```T```|```D```|```B```|```C```|```-```|```S```|```I```|
-|-----------------------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
-|**Symbol Type**|undefined|absolute|text section symbol|data section  symbol|bss section symbol|common symbol|debugger symbols|symbol in another section|indirect symbol|
+|**Printed char**       |```U```|```A```|```T```|```D```|```B```|```C```|```-```|```S```|```I```|```W```|
+|-----------------------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+|**Symbol Type**|undefined|absolute|text section symbol|data section  symbol|bss section symbol|common symbol|debugger symbols|symbol in another section|indirect symbol|Weak reference|
 
 * Symbol Section obtained by checking the ```nlist.n_sect``` section's ```section.sectname``` (see section picture above)
 * Additional Symbol Type info are in ```nlist.n_type```
     * If the symbol is local (non-external == ```N_EXT``` bit off), the symbol's type is instead represented by  the  corresponding lowercase  letter
     * A lower case u in a dynamic shared library indicates a undefined reference to a private external in another module in the same library
+    * Weak references have ```nlist.n_desc & N_WEAK_REF```
 
 ```c
 /*
