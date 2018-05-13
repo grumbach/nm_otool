@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 22:30:11 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/12 21:51:55 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 21:26:05 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@
 bool			iterate_lc(const bool is_64, const uint32_t target, \
 					t_lc_manager func_ptr)
 {
-	static const size_t		mach_size[2] =
-	{
+	static const size_t		mach_size[2] = {
 		sizeof(struct mach_header),
 		sizeof(struct mach_header_64)
 	};

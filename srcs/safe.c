@@ -6,13 +6,13 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/09 20:56:56 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 21:27:11 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 
-static inline t_safe_pointer	*singleton()
+static inline t_safe_pointer	*singleton(void)
 {
 	static t_safe_pointer		safe = {NULL, 0, 0};
 
@@ -30,7 +30,7 @@ void							*safe(const uint64_t offset, const size_t size)
 	t_safe_pointer				*safe;
 
 	safe = singleton();
-	return ((void *) \
+	return ((void *)\
 		((size_t)(safe->ptr + safe->start_offset + offset) * \
 		(safe->start_offset + offset + size <= safe->filesize)));
 }
@@ -56,11 +56,11 @@ bool							read_file(const char *filename)
 		return (errors(ERR_USAGE, "fstat failed"));
 	if (buf.st_mode & S_IFDIR)
 		return (errors(ERR_USAGE, "can't parse directories"));
-	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+	if ((ptr = \
+		mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 		return (errors(ERR_SYS, "mmap failed"));
 	if (close(fd))
 		return (errors(ERR_SYS, "close failed"));
-
 	safe = singleton();
 	safe->ptr = ptr;
 	safe->filesize = buf.st_size;

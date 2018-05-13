@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:07 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/13 16:32:19 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 21:34:25 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,15 @@ static bool		manage_symtab_32(const size_t offset)
 	uint32_t				nsyms;
 	uint32_t				i;
 
-	//retrieve pointers
 	if (!(sym = safe(offset, sizeof(*sym))))
 		return (errors(ERR_FILE, "bad symtab command offset"));
 	nsyms = endian_4(sym->nsyms);
 	if (!(nlist = safe(endian_4(sym->symoff), sizeof(*nlist) * nsyms)))
 		return (errors(ERR_FILE, "bad symbol table offset or size"));
-	// check if stringtable was invalid to begin with
 	if (!safe(endian_4(sym->stroff), endian_4(sym->strsize)))
 		return (errors(ERR_FILE, "bad stringtable offset or size"));
-	// allocate memory for sorted_symbols
 	if (!(nm_symbol_allocate(&sorted_symbols, nsyms)))
 		return (errors(ERR_THROW, __func__));
-
-	//for each symbol
 	i = 0;
 	while (i < nsyms)
 	{
@@ -58,20 +53,15 @@ static bool		manage_symtab_64(const size_t offset)
 	uint32_t				nsyms;
 	uint32_t				i;
 
-	//retrieve pointers
 	if (!(sym = safe(offset, sizeof(*sym))))
 		return (errors(ERR_FILE, "bad symtab command offset"));
 	nsyms = endian_4(sym->nsyms);
 	if (!(nlist = safe(endian_4(sym->symoff), sizeof(*nlist) * nsyms)))
 		return (errors(ERR_FILE, "bad symbol table offset or size"));
-	// check if stringtable was invalid to begin with
 	if (!safe(endian_4(sym->stroff), endian_4(sym->strsize)))
 		return (errors(ERR_FILE, "bad stringtable offset or size"));
-	// allocate memory for sorted_symbols
 	if (!(nm_symbol_allocate(&sorted_symbols, nsyms)))
 		return (errors(ERR_THROW, __func__));
-
-	//for each symbol
 	i = 0;
 	while (i < nsyms)
 	{
@@ -95,7 +85,7 @@ static bool		manage_symtab_64(const size_t offset)
 static bool		manage_segment_32(const size_t offset)
 {
 	if (!(iterate_sections(offset, NULL, NULL, \
-		(t_section_manager)&nm_sections_character_table)))
+		(t_section_manager) & nm_sections_character_table)))
 		return (errors(ERR_THROW, __func__));
 	return (true);
 }
@@ -103,7 +93,7 @@ static bool		manage_segment_32(const size_t offset)
 static bool		manage_segment_64(const size_t offset)
 {
 	if (!(iterate_sections_64(offset, NULL, NULL, \
-		(t_section_manager)&nm_sections_character_table)))
+		(t_section_manager) & nm_sections_character_table)))
 		return (errors(ERR_THROW, __func__));
 	return (true);
 }
@@ -112,58 +102,22 @@ static bool		manage_segment_64(const size_t offset)
 ** t_gatherer nm_gatherer
 */
 
-static bool		nm_gatherer(const bool is_64)
+bool			nm_gatherer(const bool is_64)
 {
 	static const uint32_t		lc_seg[2] = {LC_SEGMENT, LC_SEGMENT_64};
-	static const t_lc_manager	segment_manager[2] =
-	{
+	static const t_lc_manager	segment_manager[2] = {
 		&manage_segment_32,
 		&manage_segment_64
 	};
-	static const t_lc_manager	symtab_manager[2] =
-	{
+	static const t_lc_manager	symtab_manager[2] = {
 		&manage_symtab_32,
 		&manage_symtab_64
 	};
 
-	// reset section table
 	nm_sections_character_table(0);
-	// fill sections table
 	if (!(iterate_lc(is_64, lc_seg[is_64], segment_manager[is_64])))
 		return (errors(ERR_THROW, __func__));
-	// manage symtab
 	if (!(iterate_lc(is_64, LC_SYMTAB, symtab_manager[is_64])))
 		return (errors(ERR_THROW, __func__));
-
 	return (true);
-}
-
-/*
-** Flags are toggled (on/off) for files in the order they are given:
-**   ./ft_nm -p ft_ls -r -p -a ft_otool
-** would apply -p for ft_ls, and only use -r and -a for ft_otool
-** the flags are disabled on the second use (toggled on then off)
-*/
-
-int				main(int ac, char **av)
-{
-	if (ac < 2)
-	{
-		extract_macho(DEFAULT_TARGET, &nm_gatherer);
-	}
-	while (*++av)
-	{
-		if (**av == '-')
-		{
-			if (!nm_set_flag(*av))
-				return (EXIT_FAILURE);
-		}
-		else
-		{
-			if (ac > 2)
-				ft_printf("\n%s:\n", *av);
-			extract_macho(*av, &nm_gatherer);
-		}
-	}
-	return (EXIT_SUCCESS);
 }

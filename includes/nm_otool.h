@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:41:33 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/13 16:19:19 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 20:56:09 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,11 @@
 ** ------------------------------- Typedefs ------------------------------------
 */
 
-typedef bool	(*t_fat_magic_retriever)(uint32_t, size_t, size_t*, uint32_t*);
-typedef bool	(*t_gatherer)(const bool);
-typedef bool	(*t_lc_manager)(const size_t);
-typedef bool	(*t_section_manager)(const size_t);
+typedef bool	(*t_fat_magic_retriever)(uint32_t nfat_arch, size_t offset, \
+					size_t *target_offset, uint32_t *magic);
+typedef bool	(*t_gatherer)(const bool is_64);
+typedef bool	(*t_lc_manager)(const size_t offset);
+typedef bool	(*t_section_manager)(const size_t offset);
 
 typedef struct	s_safe_pointer
 {

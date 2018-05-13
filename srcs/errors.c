@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:48 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/11 07:36:20 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 21:00:01 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 
 bool				errors(const int err, const char *str)
 {
-	static const char	*msg[ERR_NUMBER] =
-	{
+	static const char	*msg[ERR_NUMBER] = {
 		"Fatal Error: ",
 		"Bad usage: ",
 		"Bad file: ",
