@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/01 23:54:56 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/10 02:59:49 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 16:17:20 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,13 @@ void				endian_little_mode(bool is_little_endian)
 
 	endian = singleton();
 	*endian = is_little_endian;
+}
+
+uint16_t			endian_2(uint16_t n)
+{
+	if (*singleton())
+		return ((n >> 8) | (n << 8));
+	return (n);
 }
 
 uint32_t			endian_4(uint32_t n)

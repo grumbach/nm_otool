@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:41:33 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/12 21:51:04 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 16:19:19 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,9 @@ bool			free_file(void);
 */
 
 void			endian_little_mode(bool is_little_endian);
-uint32_t		endian_4(uint32_t a);
-uint64_t		endian_8(uint64_t a);
+uint16_t		endian_2(uint16_t n);
+uint32_t		endian_4(uint32_t n);
+uint64_t		endian_8(uint64_t n);
 
 /*
 ** General functions

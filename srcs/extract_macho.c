@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/12 23:51:53 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 19:53:48 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 		else if (!(*target_offset) && (*magic_ptr == MH_CIGAM || \
 			*magic_ptr == MH_MAGIC))
 			*target_offset = endian_8(arch->offset);
-		offset += endian_8(arch->size);
+		offset += sizeof(*arch);
 	}
 	if (!(*magic = *(uint32_t*)safe(*target_offset, sizeof(*magic))))
 		return (errors(ERR_FILE, "bad fat arch magic offset"));
@@ -61,7 +61,7 @@ static bool		known_magic_retriever_32(uint32_t nfat_arch, size_t offset, \
 		else if (!(*target_offset) && (*magic_ptr == MH_CIGAM || \
 			*magic_ptr == MH_MAGIC))
 			*target_offset = endian_4(arch->offset);
-		offset += endian_4(arch->size);
+		offset += sizeof(*arch);
 	}
 	if (!(*magic = *(uint32_t*)safe(*target_offset, sizeof(*magic))))
 		return (errors(ERR_FILE, "bad fat arch magic offset"));
@@ -122,7 +122,7 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 
 	//check magic
 	if (magic == ARCHIVE_MAGIC || magic == ARCHIVE_CIGAM)
-		return_value = 42;// TODO manage_archive(func_ptr, filename);
+		return_value = manage_archive(func_ptr, filename);
 	else if (magic == MH_MAGIC || magic == MH_CIGAM)
 		return_value = func_ptr(false);
 	else if (magic == MH_MAGIC_64 || magic == MH_CIGAM_64)

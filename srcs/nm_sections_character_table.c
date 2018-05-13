@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 21:04:50 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/12 23:51:32 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 17:03:09 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,33 +60,32 @@ char		nm_sections_character_table(const size_t offset)
 ** get_type character
 */
 
-static char	get_type(const uint8_t n_type, const uint8_t n_sect, \
-				uint64_t n_value)
+static char	get_type(const uint64_t n_value, const uint8_t n_type, \
+				const uint8_t n_sect, const uint16_t n_desc)
 {
 	const int	n_type_field = N_TYPE & n_type;
 	char		type = '?';
 
-	if (N_PEXT & n_type)
-		type = 'u';
-	//n_type_field types
-	if (n_type_field == N_UNDF)
-		type = n_value ? 'c' : 'u';//TODO correct condition
+	if (N_STAB & n_type)
+		type = '-';
+	else if (n_type_field == N_UNDF)
+		type = n_value ? 'c' : 'u';
 	else if (n_type_field == N_ABS)
 		type = 'a';
-	else if (n_type_field == N_PBUD)
-		type = '-';//TODO correct condition
-	else if (n_type_field == N_INDR)
-		type = 'i';
 	else if (n_type_field == N_SECT && \
 		!(type = nm_sections_character_table(FIRST_BIT_ON_64 | n_sect)))
 		type = '?';
+	else if (n_type_field == N_PBUD)
+		type = 'u';
+	else if (n_type_field == N_INDR)
+		type = 'i';
+	else if (n_desc & N_WEAK_REF)
+		type = 'W';
 
-	//special types
-	if (N_STAB & n_type)
-		type = '-';
 	//if external set uppercase
 	if (N_EXT & n_type)
 		type = ft_toupper(type);
+
 	return (type);
 }
 
@@ -106,7 +105,8 @@ void		nm_extract_values(const struct nlist *nlist, const uint64_t n_value,
 
 	new_symbol.str_max_size = stroff + strsize - str_offset;
 	new_symbol.string = safe(str_offset, new_symbol.str_max_size);
-	new_symbol.type = get_type(nlist->n_type, nlist->n_sect, n_value);
+	new_symbol.type = get_type(n_value, nlist->n_type, nlist->n_sect, \
+		endian_2(nlist->n_desc));
 	new_symbol.offset = n_value;
 
 	// check if str is not in stringtable

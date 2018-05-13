@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:07 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/11 06:20:31 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 16:32:19 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,8 @@ int				main(int ac, char **av)
 		}
 		else
 		{
+			if (ac > 2)
+				ft_printf("\n%s:\n", *av);
 			extract_macho(*av, &nm_gatherer);
 		}
 	}
