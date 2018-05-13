@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 21:31:43 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/13 19:53:54 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 20:38:30 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,22 @@ static bool     parse_object_header(t_gatherer func_ptr, uint32_t offset, \
 {
 	t_object_header		*obj_header;
 	uint32_t			*magic;
+	char				name_length_buf[16];
+	uint32_t			name_length;
 
 	if (!(obj_header = safe(offset, sizeof(*obj_header))))
 		return (errors(ERR_FILE, "bad object header offset"));
-	offset += sizeof(*obj_header);
-	ft_printf("\n%s(%.20s):\n", filename, obj_header->long_name);
+	offset += sizeof(*obj_header) - 20;
+
+	ft_bzero(name_length_buf, 16);
+	ft_strncpy(name_length_buf, obj_header->name + 3, 13);
+	name_length = atoi(name_length_buf);
+
+	ft_printf("\n%s(%.*s):\n", filename, name_length, \
+		safe(offset, name_length));
+
+	offset += name_length;
+
 	if (!(magic = safe(offset, sizeof(*magic))))
 		return (errors(ERR_FILE, "bad object magic offset"));
 	endian_little_mode(*magic == MH_CIGAM_64 || *magic == MH_CIGAM);
