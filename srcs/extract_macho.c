@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/13 21:01:05 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/13 22:35:53 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,10 @@ static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 		if (!(magic_ptr = safe(endian_8(arch->offset), sizeof(*magic_ptr))))
 			return (errors(ERR_FILE, "bad fat arch magic offset"));
 		if (*magic_ptr == MH_CIGAM_64 || *magic_ptr == MH_MAGIC_64)
+		{
 			*target_offset = endian_8(arch->offset);
+			break ;
+		}
 		else if (!(*target_offset) && (*magic_ptr == MH_CIGAM || \
 			*magic_ptr == MH_MAGIC))
 			*target_offset = endian_8(arch->offset);
@@ -49,7 +52,10 @@ static bool		known_magic_retriever_32(uint32_t nfat_arch, size_t offset, \
 		if (!(magic_ptr = safe(endian_4(arch->offset), sizeof(*magic_ptr))))
 			return (errors(ERR_FILE, "bad fat arch magic offset"));
 		if (*magic_ptr == MH_CIGAM_64 || *magic_ptr == MH_MAGIC_64)
+		{
 			*target_offset = endian_4(arch->offset);
+			break ;
+		}
 		else if (!(*target_offset) && (*magic_ptr == MH_CIGAM || \
 			*magic_ptr == MH_MAGIC))
 			*target_offset = endian_4(arch->offset);
@@ -93,24 +99,24 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 
 bool			extract_macho(const char *filename, t_gatherer func_ptr)
 {
-	uint32_t	magic;
+	uint32_t	*magic;
 	bool		return_value;
 
 	if (!read_file(filename))
 		return (errors(ERR_THROW, __func__));
-	if (!(magic = *(uint32_t*)safe(0, sizeof(magic))))
+	if (!(magic = safe(0, sizeof(magic))))
 		return (errors(ERR_FILE, "missing magic"));
-	endian_little_mode(magic == FAT_CIGAM || magic == FAT_CIGAM_64 || \
-		magic == MH_CIGAM || magic == MH_CIGAM_64 || magic == ARCHIVE_CIGAM);
-	if (magic == ARCHIVE_MAGIC || magic == ARCHIVE_CIGAM)
+	endian_little_mode(*magic == FAT_CIGAM || *magic == FAT_CIGAM_64 || \
+		*magic == MH_CIGAM || *magic == MH_CIGAM_64 || *magic == ARCHIVE_CIGAM);
+	if (*magic == ARCHIVE_MAGIC || *magic == ARCHIVE_CIGAM)
 		return_value = manage_archive(func_ptr, filename);
-	else if (magic == MH_MAGIC || magic == MH_CIGAM)
+	else if (*magic == MH_MAGIC || *magic == MH_CIGAM)
 		return_value = func_ptr(false);
-	else if (magic == MH_MAGIC_64 || magic == MH_CIGAM_64)
+	else if (*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64)
 		return_value = func_ptr(true);
-	else if (magic == FAT_MAGIC || magic == FAT_CIGAM)
+	else if (*magic == FAT_MAGIC || *magic == FAT_CIGAM)
 		return_value = manage_fat(func_ptr, false);
-	else if (magic == FAT_MAGIC_64 || magic == FAT_CIGAM_64)
+	else if (*magic == FAT_MAGIC_64 || *magic == FAT_CIGAM_64)
 		return_value = manage_fat(func_ptr, true);
 	else
 		return_value = errors(ERR_FILE, "unknown file format");
