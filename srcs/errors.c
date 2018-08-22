@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:48 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/11 07:36:20 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/08/22 19:03:06 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,20 @@ bool				errors(const int err, const char *str)
 		"  -> in _"
 	};
 
-	ft_putstr_fd(msg[err], 2);
-	ft_putendl_fd(str, 2);
+	ft_perr(msg[err]);
+	ft_perr(str);
+	ft_perr("\n");
 	if (err == ERR_USAGE)
 	{
-		ft_putendl_fd("usage: ./ft_nm [flags ...] [file ...] ", 2);
-		ft_putendl_fd("  -a -- Display  all symbol table entries", 2);
-		ft_putendl_fd("  -g -- Display only global (external) symbols", 2);
-		ft_putendl_fd("  -p -- Don't sort; display in symbol-table order", 2);
-		ft_putendl_fd("  -u -- Display only undefined symbols", 2);
-		ft_putendl_fd("  -U -- Don't display undefined symbols", 2);
-		ft_putendl_fd("  -j -- Just display the symbol names", 2);
-		ft_putendl_fd("  -r -- Sort in reverse order", 2);
-		ft_putendl_fd("  -n -- Sort numerically rather than alphabetically", 2);
+		ft_perr("usage: ./ft_nm [flags ...] [file ...] \n");
+		ft_perr("  -a -- Display  all symbol table entries\n");
+		ft_perr("  -g -- Display only global (external) symbols\n");
+		ft_perr("  -p -- Don't sort; display in symbol-table order\n");
+		ft_perr("  -u -- Display only undefined symbols\n");
+		ft_perr("  -U -- Don't display undefined symbols\n");
+		ft_perr("  -j -- Just display the symbol names\n");
+		ft_perr("  -r -- Sort in reverse order\n");
+		ft_perr("  -n -- Sort numerically rather than alphabetically\n");
 	}
 	return (false);
 }
