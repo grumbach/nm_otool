@@ -6,18 +6,13 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/09 20:56:56 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/08/22 18:57:49 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 
-static inline t_safe_pointer	*singleton()
-{
-	static t_safe_pointer		safe = {NULL, 0, 0};
-
-	return (&safe);
-}
+static t_safe_pointer			safe_pointer = {NULL, 0, 0};
 
 /*
 ** safe()
@@ -27,20 +22,14 @@ static inline t_safe_pointer	*singleton()
 
 void							*safe(const uint64_t offset, const size_t size)
 {
-	t_safe_pointer				*safe;
-
-	safe = singleton();
 	return ((void *) \
-		((size_t)(safe->ptr + safe->start_offset + offset) * \
-		(safe->start_offset + offset + size <= safe->filesize)));
+		((size_t)(safe_pointer.ptr + safe_pointer.start_offset + offset) * \
+		(safe_pointer.start_offset + offset + size <= safe_pointer.filesize)));
 }
 
 void							set_start_offset(size_t new_start_offset)
 {
-	t_safe_pointer				*safe;
-
-	safe = singleton();
-	safe->start_offset = new_start_offset;
+	safe_pointer.start_offset = new_start_offset;
 }
 
 bool							read_file(const char *filename)
@@ -48,7 +37,6 @@ bool							read_file(const char *filename)
 	int							fd;
 	void						*ptr;
 	struct stat					buf;
-	t_safe_pointer				*safe;
 
 	if ((fd = open(filename, O_RDONLY)) < 0)
 		return (errors(ERR_SYS, "no such file or directory"));
@@ -61,19 +49,15 @@ bool							read_file(const char *filename)
 	if (close(fd))
 		return (errors(ERR_SYS, "close failed"));
 
-	safe = singleton();
-	safe->ptr = ptr;
-	safe->filesize = buf.st_size;
-	safe->start_offset = 0;
+	safe_pointer.ptr = ptr;
+	safe_pointer.filesize = buf.st_size;
+	safe_pointer.start_offset = 0;
 	return (true);
 }
 
 bool							free_file(void)
 {
-	t_safe_pointer				*safe;
-
-	safe = singleton();
-	if (munmap(safe->ptr, safe->filesize))
+	if (munmap(safe_pointer.ptr, safe_pointer.filesize))
 		return (errors(ERR_SYS, "munmap failed"));
 	return (true);
 }

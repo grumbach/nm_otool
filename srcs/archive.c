@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 21:31:43 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/13 20:38:30 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/14 16:52:33 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static bool     parse_object_header(t_gatherer func_ptr, uint32_t offset, \
 
 	ft_bzero(name_length_buf, 16);
 	ft_strncpy(name_length_buf, obj_header->name + 3, 13);
-	name_length = atoi(name_length_buf);
+	name_length = ft_atoi(name_length_buf);
 
 	ft_printf("\n%s(%.*s):\n", filename, name_length, \
 		safe(offset, name_length));

@@ -6,23 +6,17 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 03:08:08 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/11 10:46:25 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/08/22 17:56:55 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 #include "nm_display.h"
 
-static inline uint8_t	*singleton()
-{
-	static uint8_t		flags = 0;
-
-	return (&flags);
-}
+static uint8_t			flags = 0;
 
 bool					nm_set_flag(const char *av)
 {
-	static uint8_t		*flags;
 	uint8_t				new_flags;
 
 	new_flags = 0;
@@ -38,8 +32,7 @@ bool					nm_set_flag(const char *av)
 	if (!new_flags)
 		return (errors(ERR_USAGE, av));
 
-	flags = singleton();
-	*flags ^= new_flags;
+	flags ^= new_flags;
 	return (true);
 }
 
@@ -62,9 +55,6 @@ bool					nm_symbol_allocate(t_sym_sort *sorted_symbols, \
 void					nm_store_value(t_sym_sort *sorted_symbols, \
 							const t_symbol *new_symbol)
 {
-	uint8_t				flags;
-
-	flags = *singleton();
 	if ((NM_FLAG_A(flags) || new_symbol->type != '-') && \
 		!(NM_FLAG_G(flags) && !ft_isupper(new_symbol->type)) && \
 		!(NM_FLAG_U(flags) && \
@@ -82,12 +72,10 @@ void					nm_store_value(t_sym_sort *sorted_symbols, \
 void					nm_sort_print_free(t_sym_sort *sorted_symbols, \
 							const int padding)
 {
-	uint8_t				flags;
 	t_symbol			*curr;
 	size_t				i;
 
 	//sort
-	flags = *singleton();
 	if (!NM_FLAG_P(flags))
 		nm_selection_sort(sorted_symbols, \
 			(!!NM_FLAG_R(flags) + (!!NM_FLAG_N(flags)) * 2));
