@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:40:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/08/22 18:57:49 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/04/13 18:29:22 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ static t_safe_pointer			safe_pointer = {NULL, 0, 0};
 
 void							*safe(const uint64_t offset, const size_t size)
 {
+	if (offset + size < offset)
+		return (NULL);
 	return ((void *) \
 		((size_t)(safe_pointer.ptr + safe_pointer.start_offset + offset) * \
 		(safe_pointer.start_offset + offset + size <= safe_pointer.filesize)));
